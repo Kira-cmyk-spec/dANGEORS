@@ -50,6 +50,7 @@ class Program
             // Генерация двух случайных чисел
             int number1 = random.Next(0, 101);
             int number2 = random.Next(0, 101);
+            int Gold = 0;
 
             // Формирование задачи
             Console.WriteLine($"{number1} + {number2} = ?");
@@ -64,8 +65,8 @@ class Program
                 // Проверка правильности ответа
                 if (userAnswer == number1 + number2)
                 {
-                    int Gold = playerGold + 30;
-                    Console.WriteLine("Вы открыли сундук и нашли золото!" );
+                    playerGold =Gold  + 30;
+                    Console.WriteLine($"Вы открыли сундук и нашли 20 золото!" + "У вас сейчас золота: "+ playerGold);
 
                 }
                 else
@@ -132,13 +133,13 @@ class Program
 
             if (weaponChoice == 1) // Меч
             {
-                damage = random.Next(10, 21);
+                damage = random.Next(10, 25);
             }
             else if (weaponChoice == 2) // Лук
             {
                 // Проверка наличия стрел
                 // Если стрел нет, то нельзя использовать лук
-                damage = random.Next(5, 16);
+                damage = random.Next(5, 20);
             }
             else if (weaponChoice == 3) // Зелье Лечения
             {
@@ -154,7 +155,10 @@ class Program
             if (monsterHealth > 0)
             {
                 int monsterDamage = random.Next(5, 16);
-                playerHealth = playerHealth2;
+                if (weaponChoice == 3) // Зелье Лечения
+                {
+                    playerHealth = playerHealth2;
+                }
                 playerHealth -= monsterDamage;
                 Console.WriteLine($"Монстр атакует! Вы потеряли {monsterDamage} HP. Осталось здоровье: {playerHealth}");
             }
@@ -201,7 +205,11 @@ class Program
                 if (monsterHealth > 0)
                 {
                     int monsterDamage = random.Next(5, 16);
-                playerHealth = playerHealth2;
+                if (weaponChoice == 3) // Зелье Лечения
+                {   
+                    playerHealth = playerHealth2;              
+                }
+               
                 playerHealth -= monsterDamage;
                     
                     Console.WriteLine($"Монстр атакует! Вы потеряли {monsterDamage} HP. Осталось здоровье: {playerHealth}");
