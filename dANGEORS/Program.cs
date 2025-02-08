@@ -11,7 +11,7 @@ class Program
         Random random = new Random();
 
         int playerHealth = 100;
-        int playerGold = 50;
+        int playerGold = 0;
         string[] inventory = new string[5];
         int inventoryCount = 0;
 
@@ -43,6 +43,41 @@ class Program
             }
             return playerGold;
         }
+        static int OpenChest(int playerGold)
+        {
+            Random random = new Random();
+
+            // Генерация двух случайных чисел
+            int number1 = random.Next(0, 101);
+            int number2 = random.Next(0, 101);
+
+            // Формирование задачи
+            Console.WriteLine($"{number1} + {number2} = ?");
+
+            // Получение ответа от пользователя
+            string userInput = Console.ReadLine();
+            int userAnswer;
+
+            // Проверка, является ли ввод числом
+            if (int.TryParse(userInput, out userAnswer))
+            {
+                // Проверка правильности ответа
+                if (userAnswer == number1 + number2)
+                {
+                    int Gold = playerGold + 30;
+                    Console.WriteLine("Вы открыли сундук и нашли золото!" );
+
+                }
+                else
+                {
+                    Console.WriteLine("Неправильный ответ, сундук закрыт.");
+                }
+
+
+            }
+            return playerGold;
+
+        }
         // Игровой цикл
         for (int room = 0; room < dungeonMap.Length; room++)
         {
@@ -62,7 +97,7 @@ class Program
                     break;
 
                 case "Chest":
-                    OpenChest();
+                     playerGold = OpenChest(playerGold);
                     break;
 
                 case "Merchant":
@@ -118,19 +153,21 @@ class Program
         return playerHealth;
     }
 
-   
-        static int BattleWithMonster(int playerHealth)
+
+    static int BattleWithMonster(int playerHealth)
     {
         Random random = new Random();
         int monsterHealth = random.Next(20, 51);
         Console.WriteLine($"Вы встретили монстра с {monsterHealth} HP!");
-
+                 
+               
         while (playerHealth > 0 && monsterHealth > 0)
         {
-            Console.WriteLine("Выберите оружие: 1 - Меч, 2 - Лук");
+            Console.WriteLine("Выберите оружие: 1 - Меч, 2 - Лук, 3 - Использовать Зелье Лечения");
             int weaponChoice = int.Parse(Console.ReadLine());
             int damage = 0;
-
+            int playerHealth1 = 0;
+            int playerHealth2 = 0;
             if (weaponChoice == 1) // Меч
             {
                 damage = random.Next(10, 21);
@@ -141,57 +178,30 @@ class Program
                 // Если стрел нет, то нельзя использовать лук
                 damage = random.Next(5, 16);
             }
-
-            monsterHealth -= damage;
-            Console.WriteLine($"Вы нанесли {damage} урона монстру. Осталось HP: {monsterHealth}");
-
-            if (monsterHealth > 0)
+            else if (weaponChoice == 3) // Зелье Лечения
             {
-                int monsterDamage = random.Next(5, 16);
+                playerHealth1 = random.Next(5, 20); 
+                playerHealth2 = playerHealth + playerHealth1;
+                Console.WriteLine($"Вы добавили себе {playerHealth1} HP. Осталось здоровье: {playerHealth2}");
+
+            }
+                monsterHealth -= damage;
+                Console.WriteLine($"Вы нанесли {damage} урона монстру. Осталось HP: {monsterHealth}");
+              
+                if (monsterHealth > 0)
+                {
+                    int monsterDamage = random.Next(5, 16);
+                playerHealth = playerHealth2;
                 playerHealth -= monsterDamage;
-                Console.WriteLine($"Монстр атакует! Вы потеряли {monsterDamage} HP. Осталось здоровье: {playerHealth}");
-            }
+                    
+                    Console.WriteLine($"Монстр атакует! Вы потеряли {monsterDamage} HP. Осталось здоровье: {playerHealth}");
+                }
+            
+
+            
         }
-
-        return playerHealth;
+       return playerHealth;
     }
-
-    static void OpenChest()
-    {
-        Random random = new Random();
-
-        // Генерация двух случайных чисел
-        int number1 = random.Next(0, 101);
-        int number2 = random.Next(0, 101);
-
-        // Формирование задачи
-        Console.WriteLine($"{number1} + {number2} = ?");
-
-        // Получение ответа от пользователя
-        string userInput = Console.ReadLine();
-        int userAnswer;
-
-        // Проверка, является ли ввод числом
-        if (int.TryParse(userInput, out userAnswer))
-        {
-            // Проверка правильности ответа
-            if (userAnswer == number1 + number2)
-            {
-                Console.WriteLine("Вы открыли сундук и нашли золото!");
-            }
-            else
-            {
-                Console.WriteLine("Неправильный ответ, сундук закрыт.");
-            }
-
-
-        }
-
-
-    }
-
-   
-   
 
     } 
 
