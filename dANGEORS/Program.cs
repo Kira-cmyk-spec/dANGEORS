@@ -127,6 +127,8 @@ class Program
             Console.WriteLine("Выберите оружие: 1 - Меч, 2 - Лук");
             int weaponChoice = int.Parse(Console.ReadLine());
             int damage = 0;
+            int playerHealth1 = 0;
+            int playerHealth2 = 0;
 
             if (weaponChoice == 1) // Меч
             {
@@ -138,6 +140,13 @@ class Program
                 // Если стрел нет, то нельзя использовать лук
                 damage = random.Next(5, 16);
             }
+            else if (weaponChoice == 3) // Зелье Лечения
+            {
+                playerHealth1 = random.Next(5, 20);
+                playerHealth2 = playerHealth + playerHealth1;
+                Console.WriteLine($"Вы добавили себе {playerHealth1} HP. Осталось здоровье: {playerHealth2}");
+
+            }
 
             monsterHealth -= damage;
             Console.WriteLine($"Вы нанесли {damage} урона Боссу. Осталось HP: {monsterHealth}");
@@ -145,6 +154,7 @@ class Program
             if (monsterHealth > 0)
             {
                 int monsterDamage = random.Next(5, 16);
+                playerHealth = playerHealth2;
                 playerHealth -= monsterDamage;
                 Console.WriteLine($"Монстр атакует! Вы потеряли {monsterDamage} HP. Осталось здоровье: {playerHealth}");
             }
