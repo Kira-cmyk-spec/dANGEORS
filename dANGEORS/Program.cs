@@ -13,7 +13,7 @@ class Program
 
         int playerHealth = 100;
         int playerGold = 0;
-        string[] inventory = new string[5];
+        int inventory_arrows = 0;
         int inventoryCount = 0;
 
         // Заполнение карты подземелья
@@ -67,26 +67,51 @@ class Program
             return playerGold;
 
         }
-        static int Merchant(int playerGold, ref int inventoryCount)
+        static int Merchant(int playerGold, ref int inventoryCount, ref int inventory_arrows)
         {
-            Console.WriteLine($"Торговец предлагает зелье Лечения за 30 золота. \n У вас сейчас {inventoryCount} зелий и сейчас золота: {playerGold}");
-            Console.WriteLine(" 1 - Купить зелье , 2 - Отказаться");
+
+            Console.WriteLine($"Торговец предлагает Заглянуть в его лавку. \n У вас сейчас {inventoryCount} зелий и золота: {playerGold}");
+            Console.WriteLine(" 1 - Купить зелье , 2 - Купить Стрелы  , 3 - Отказаться");
             int weaponChoice = int.Parse(Console.ReadLine());
             if (weaponChoice == 1)
             {
-                if (playerGold >= 30)
+                Console.WriteLine("Сколько зелий вы купите? (одно зелье стоит 30 золота)");
+                string userInput = Console.ReadLine();
+                int userAnswer;
+                if (int.TryParse(userInput, out userAnswer))
                 {
-                    playerGold -= 30;
-                    inventoryCount += 1;
-                    Console.WriteLine($"Вы купили зелье.\n У вас {inventoryCount} зелий  и {playerGold} денег");
+                    if (playerGold >= 30)
+                    {
+                        playerGold -= 30;
+                        inventoryCount += userAnswer;
+                        Console.WriteLine($"Вы купили зелье.\n У вас {inventoryCount} зелий и {playerGold} денег");
+                    }
+                    else
+                    {
+                        Console.WriteLine("У Вас недостаточно золота.");
+                    }
                 }
-                else
-                {
-                    Console.WriteLine("У Вас недостаточно золота.");
-                }
-
             }
-            else if (weaponChoice == 2)
+            if (weaponChoice == 2)
+            {
+                Console.WriteLine("Сколько Стрел вы купите? (одна стрела стоит 30 золота)");
+                string userInput = Console.ReadLine();
+                int userAnswer;
+                if (int.TryParse(userInput, out userAnswer))
+                {
+                    if (playerGold >= 30)
+                    {
+                        playerGold -= 30;
+                        inventory_arrows += userAnswer;
+                        Console.WriteLine($"Вы купили {inventory_arrows} Стрел.\n У вас {inventory_arrows} Стрел  и {playerGold} денег");
+                    }
+                    else
+                    {
+                        Console.WriteLine("У Вас недостаточно золота.");
+                    }
+                }
+            }
+            else if (weaponChoice == 3)
             {
                 Console.WriteLine("Вы отказались");
             }
@@ -94,11 +119,24 @@ class Program
             return playerGold;
         }
 
-        static int BattleWithMonster1(int playerHealth, ref int inventoryCount)
+        static int BattleWithMonster1(int playerHealth, ref int inventoryCount, ref int inventory_arrows)
         {
             Random random = new Random();
             int monsterHealth = random.Next(51, 80);
-            Console.WriteLine($"Вы встретили Босса с {monsterHealth} HP!");
+            Console.Write($"Вы встретили Босса с {monsterHealth} ");
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.Write($" HP!");
+            Console.ResetColor();
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.Write($"\n Зелий у вас  {inventoryCount}");
+            Console.ResetColor();
+            Console.ForegroundColor = ConsoleColor.Blue;
+            Console.WriteLine($"\n Стрел у вас  {inventoryCount}");
+            Console.ResetColor();
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.Write($"У вас {playerHealth} HP! ");
+            Console.ResetColor();
+
             Console.WriteLine($"\n У вас {inventoryCount} зелий ");
 
             while (playerHealth > 0 && monsterHealth > 0)
@@ -116,9 +154,20 @@ class Program
                 }
                 else if (weaponChoice == 2) // Лук
                 {
-                    // Проверка наличия стрел
-                    // Если стрел нет, то нельзя использовать лук
-                    damage = random.Next(5, 20);
+                    if(inventory_arrows > 0)
+                    {
+                        // Проверка наличия стрел
+                        // Если стрел нет, то нельзя использовать лук
+                        inventory_arrows -= 1;
+                        damage = random.Next(5, 20);
+                      
+                        Console.ForegroundColor = ConsoleColor.Magenta;
+                        Console.WriteLine($"\n Стрел у вас осталось {inventory_arrows}");
+                        Console.ResetColor();
+                    }
+                    
+                  
+                   
                 }
                 else if (weaponChoice == 3 && inventoryCount > 0) // Зелье Лечения
                 {
@@ -126,8 +175,21 @@ class Program
                        
                         playerHealth1 = random.Next(15, 30);
                         playerHealth2 = playerHealth + playerHealth1; 
-                        Console.WriteLine($"Вы добавили себе {playerHealth1} HP. Осталось здоровье: {playerHealth2}");
-                        inventoryCount--;
+                        Console.Write($"Вы добавили себе {playerHealth1} ");
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.Write($" HP.");
+                    Console.ResetColor();
+                    Console.WriteLine($"Осталось здоровье: {playerHealth2}");
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.Write($"HP!");
+                    Console.ResetColor();
+                    Console.ForegroundColor = ConsoleColor.Green;
+                    Console.Write($"\n Зелий у вас осталось {inventoryCount}");
+                    Console.ResetColor();
+                    Console.ForegroundColor = ConsoleColor.Blue;
+                    Console.Write($"\n Стрел у вас осталось {inventory_arrows}");
+                    Console.ResetColor();
+                    inventoryCount--;
                     
 
                 }
@@ -137,7 +199,11 @@ class Program
                 }
 
                 monsterHealth -= damage;
-                Console.WriteLine($"Вы нанесли {damage} урона Боссу. Осталось HP: {monsterHealth}");
+                Console.Write($" Вы нанесли {damage} урона Боссу. Осталось ");
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.Write($" HP: ");
+                Console.ResetColor();
+                Console.WriteLine($" {monsterHealth}");
 
                 if (monsterHealth > 0)
                 {
@@ -145,9 +211,58 @@ class Program
                     if (weaponChoice == 3) // Зелье Лечения
                     {
                         playerHealth = playerHealth2;
+                        Console.Write($" Босс атакует! Вы потеряли {monsterDamage} ");
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.Write($" HP");
+                        Console.ResetColor();
+                        Console.Write($" Осталось здоровье: {playerHealth}");
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.Write($" HP! ");
+                        Console.ResetColor();
+                        Console.ForegroundColor = ConsoleColor.Green;
+                        Console.Write($"\n Зелий у вас осталось {inventoryCount}");
+                        Console.ResetColor();
+                        Console.ForegroundColor = ConsoleColor.Blue;
+                        Console.WriteLine($"\n Стрел у вас осталось {inventory_arrows}");
+                        Console.ResetColor();
                     }
-                    playerHealth -= monsterDamage;
-                    Console.WriteLine($"Монстр атакует! Вы потеряли {monsterDamage} HP. Осталось здоровье: {playerHealth}");
+                    if (weaponChoice == 2 ) // лук
+                    {
+                        Console.Write(" Вы прострелили Босса, он не смог до вас дотянуться " );
+                        Console.Write($" Босс атакует! Вы потеряли 0 ");
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.Write($" HP ");
+                        Console.ResetColor();
+                        Console.Write($"Осталось здоровье: {playerHealth}");
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.Write($" HP! ");
+                        Console.ResetColor();
+                        Console.ForegroundColor = ConsoleColor.Green;
+                        Console.Write($"\n Зелий у вас осталось {inventoryCount}");
+                        Console.ResetColor();
+                        Console.ForegroundColor = ConsoleColor.Blue;
+                        Console.WriteLine($"\n Стрел у вас осталось {inventory_arrows}");
+                        Console.ResetColor();
+                    }
+                    if (weaponChoice == 1) // меч
+                    {
+                        playerHealth -= monsterDamage;
+                        Console.Write($" Босс атакует! Вы потеряли {monsterDamage} HP. ");
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.Write($" HP. ");
+                        Console.ResetColor();
+                        Console.Write($" Осталось здоровье: {playerHealth}");
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.Write($" HP! ");
+                        Console.ResetColor();
+                        Console.ForegroundColor = ConsoleColor.Green;
+                        Console.Write($"\n Зелий у вас осталось {inventoryCount}");
+                        Console.ResetColor();
+                        Console.ForegroundColor = ConsoleColor.Blue;
+                        Console.WriteLine($"\n Стрел у вас осталось {inventory_arrows}");
+                        Console.ResetColor();
+
+                    }
                 }
             }
 
@@ -156,12 +271,25 @@ class Program
         }
 
 
-        static int BattleWithMonster(int playerHealth, ref int inventoryCount)
+        static int BattleWithMonster(int playerHealth, ref int inventoryCount, ref int inventory_arrows)
         {
             Random random = new Random();
             int monsterHealth = random.Next(20, 51);
-            Console.WriteLine($"Вы встретили монстра с {monsterHealth} HP!");
-            Console.WriteLine($"\n У вас {inventoryCount} зелий и {playerHealth} HP ");           
+            Console.Write($" Вы встретили монстра с {monsterHealth} ");
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.Write($" HP! ");
+            Console.ResetColor();
+          
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.Write($"\n Зелий у вас  {inventoryCount}");
+            Console.ResetColor();
+            Console.ForegroundColor = ConsoleColor.Blue;
+            Console.WriteLine($"\n Стрел у вас  {inventoryCount}");
+            Console.ResetColor();         
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.Write($"У вас {playerHealth} HP! ");
+            Console.ResetColor();
+                
 
             while (playerHealth > 0 && monsterHealth > 0)
             {
@@ -177,21 +305,33 @@ class Program
                 }
                 else if (weaponChoice == 2) // Лук
                 {
-                    // Проверка наличия стрел
-                    // Если стрел нет, то нельзя использовать лук
-                    damage = random.Next(5, 16);
+                    if (inventory_arrows > 0)
+                    {
+                        // Проверка наличия стрел
+                        // Если стрел нет, то нельзя использовать лук
+                        inventory_arrows -= 1;
+                        damage = random.Next(5, 20);
+                        Console.ForegroundColor = ConsoleColor.Magenta;
+                        Console.Write($"\n Стрел у вас осталось {inventory_arrows}");
+                        Console.ResetColor();
+                    }
+
                 }
+               
                 else if (weaponChoice == 3 && inventoryCount > 0) // Зелье Лечения
                 {
-                   
-                       
+                      
                         playerHealth1 = random.Next(15, 30);
                         playerHealth2 = playerHealth + playerHealth1;
                         inventoryCount -= 1;
-                        Console.WriteLine($"Вы добавили себе {playerHealth1} HP. Осталось здоровье: {playerHealth2} \n зелий у вас осталось {inventoryCount}" );
-                        
-                    
-                    
+                        Console.WriteLine($"Вы добавили себе {playerHealth1} " );
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.Write($"HP! ");
+                    Console.ResetColor();
+                 
+                 
+                   
+                  
 
                 }
                 else
@@ -199,23 +339,90 @@ class Program
                         Console.WriteLine("Вы бездействовали");
                     }
                 monsterHealth -= damage;
-                Console.WriteLine($"Вы нанесли {damage} урона монстру. Осталось HP: {monsterHealth}");
+                Console.Write($"Вы нанесли {damage} урона монстру. Осталось ");
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.Write($"HP: ");
+                Console.ResetColor();
+                Console.WriteLine($"{monsterHealth}");
 
                 if (monsterHealth > 0)
                 {
                     int monsterDamage = random.Next(5, 16);
-                    if (weaponChoice == 3) // Зелье Лечения
+                    if (weaponChoice == 3 ) // Зелье Лечения
                     {
                         playerHealth = playerHealth2;
+                        Console.Write($"Монстр атакует! Вы потеряли {monsterDamage}");
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.Write($"HP");
+                        Console.ResetColor();
+                        Console.Write($"Осталось здоровье: {playerHealth}");                                               
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.Write($" HP! ");
+                        Console.ResetColor();
+                        Console.ForegroundColor = ConsoleColor.Green;
+                        Console.Write($"\n Зелий у вас осталось {inventoryCount}");
+                        Console.ResetColor();
+                        Console.ForegroundColor = ConsoleColor.Blue;
+                        Console.WriteLine($"\n Стрел у вас осталось {inventoryCount}");
+                        Console.ResetColor();
                     }
+                    if (weaponChoice == 2 ) // лук
+                    {
+                        Console.WriteLine("Вы прострелили монстра, он не смог до вас дотянуться");
+                        Console.Write($"Монстр атакует! Вы потеряли 0 ");
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.Write($" HP ");
+                        Console.ResetColor();
+                        Console.Write($"Осталось здоровье: {playerHealth}");
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.Write($" HP! ");
+                        Console.ResetColor();
+                        Console.ForegroundColor = ConsoleColor.Green;
+                        Console.Write($"\n Зелий у вас осталось {inventoryCount}");
+                        Console.ResetColor();
+                        Console.ForegroundColor = ConsoleColor.Blue;
+                        Console.WriteLine($"\n Стрел у вас осталось {inventoryCount}");
+                        Console.ResetColor();
+                    }
+                    
+                    if (weaponChoice == 1) // меч
+                    {
+                        playerHealth -= monsterDamage;
+                        Console.Write($"Монстр атакует! Вы потеряли {monsterDamage} ");
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.Write($"HP. ");
+                        Console.ResetColor();
+                        Console.Write($"Осталось здоровье: {playerHealth}");
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.Write($" HP! ");
+                        Console.ResetColor();
+                        Console.ForegroundColor = ConsoleColor.Green;
+                        Console.Write($"\n Зелий у вас осталось {inventoryCount}");
+                        Console.ResetColor();
+                        Console.ForegroundColor = ConsoleColor.Blue;
+                        Console.WriteLine($"\n Стрел у вас осталось {inventoryCount}");
+                        Console.ResetColor();
 
-                    playerHealth -= monsterDamage;
-
-                    Console.WriteLine($"Монстр атакует! Вы потеряли {monsterDamage} HP. Осталось здоровье: {playerHealth}");
+                    }
+                    else
+                    {
+                        
+                        Console.Write($"Монстр атакует! Вы потеряли {monsterDamage} ");
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.Write($" HP. ");
+                        Console.ResetColor();
+                        Console.Write($"Осталось здоровье: {playerHealth}");
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.Write($" HP! ");
+                        Console.ResetColor();
+                        Console.ForegroundColor = ConsoleColor.Green;
+                        Console.Write($"\n Зелий у вас осталось {inventoryCount}");
+                        Console.ResetColor();
+                        Console.ForegroundColor = ConsoleColor.Blue;
+                        Console.WriteLine($"\n Стрел у вас осталось {inventoryCount}");
+                        Console.ResetColor();
+                    }
                 }
-
-
-
             }
             return playerHealth;
         }
@@ -228,7 +435,7 @@ class Program
             switch (dungeonMap[room])
             {
                 case "Monster":
-                    playerHealth = BattleWithMonster(playerHealth, ref inventoryCount);
+                    playerHealth = BattleWithMonster(playerHealth, ref inventoryCount, ref inventory_arrows);
                     if (playerHealth <= 0) return;// Конец игры
 
                     playerGold +=  30; // Конец рунда
@@ -246,7 +453,7 @@ class Program
                     break;
 
                 case "Merchant":
-                    playerGold = Merchant(playerGold, ref  inventoryCount);
+                    playerGold = Merchant(playerGold, ref  inventoryCount, ref  inventory_arrows);
                     break;
 
                 case "Empty":
@@ -255,7 +462,7 @@ class Program
 
                 case "Boss":
                     Console.WriteLine("Вы встретили босса!");
-                    playerHealth = BattleWithMonster1(playerHealth, ref inventoryCount);
+                    playerHealth = BattleWithMonster1(playerHealth, ref inventoryCount, ref  inventory_arrows);
                     if (playerHealth <= 0) return;
                     
                     Console.WriteLine($"Вы победили Босса.\n  У вас осталось {inventoryCount} зелий  и {playerGold} денег");// Конец игры // Логика боя с боссом
